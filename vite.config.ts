@@ -19,5 +19,11 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [crx({ manifest }), vue()],
+    server: {
+      hmr: {
+        host: 'localhost',
+        port: 3000
+      }
+    }
   }
 })
