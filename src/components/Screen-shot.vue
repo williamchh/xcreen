@@ -6,8 +6,11 @@
         <p>{{ content }}</p>
         <!-- Add more elements as needed -->
       </div>
-      <button @click="captureImage">Capture as Image</button>
-      <button @click="captureEntirePage">Capture Entire Page</button>
+      <div style="display: flex; flex-direction: column; gap: .5em;">
+        <button @click="captureImage">Capture as Image</button>
+        <button @click="captureEntirePage">Capture Entire Page</button>
+        <button @click="scrollCapture">Scroll Capture</button>
+      </div>
     </div>
 </template>
 
@@ -44,24 +47,48 @@ const captureImage = async () => {
 };
 
 const captureEntirePage = async () => {
-    const htmlResponse = await chrome.runtime.sendMessage({ type: 'CAPTURE_ENTIRE_PAGE' })
+  await chrome.runtime.sendMessage({ type: 'ENTIRE_PAGE_HTML' })
+};
+
+const scrollCapture = async () => {
+    const htmlResponse = await chrome.runtime.sendMessage({ type: 'SCROLL_CAPTURE' })
 
     if (!htmlResponse) {
       console.error('No image response');
       return;
     }
-    console.log(htmlResponse);
-    // const canvas = await html2canvas(htmlResponse, {
-    //   scrollX: 0,
-    //   scrollY: 0,
-    //   windowWidth: document.documentElement.scrollWidth,
-    //   windowHeight: document.documentElement.scrollHeight,
-    //   x: 0,
-    //   y: 0,
-    //   width: document.documentElement.scrollWidth,
-    //   height: document.documentElement.scrollHeight,
-    // });
+
+    const { html, pageHeight, pageWidth, pageLeftPadding } = htmlResponse;
+    const outerHtml = html;
+    const htmlEl = document.createElement('div');
+    htmlEl.innerHTML = outerHtml;
     
+    // Temporarily append htmlEl to the document body
+    document.body.appendChild(htmlEl);
+    
+    html2canvas(htmlEl, {
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: pageWidth + pageLeftPadding,
+      windowHeight: pageHeight,
+      x: 0,
+      y: 0,
+      width: document.documentElement.scrollWidth,
+      height: pageHeight,
+    }).then(canvas => {
+        // Do something with the canvas
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = 'screenshot.png';
+        link.click();
+    
+        // Remove htmlEl from the document body
+        document.body.removeChild(htmlEl);
+    })
+    .catch(err => {
+      console.error(err);
+    });    
 };
 
 </script>

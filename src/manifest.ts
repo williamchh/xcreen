@@ -43,7 +43,8 @@ export default defineManifest({
   permissions: ['sidePanel', 'storage', 'tabs', 'activeTab', 'scripting'],
   host_permissions: [
     'http://*/*',
-    'https://*/*'
+    'https://*/*',
+    '<all_urls>'
   ],
   chrome_url_overrides: {
     newtab: 'newtab.html',
