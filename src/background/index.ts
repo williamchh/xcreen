@@ -1,5 +1,29 @@
 console.log('background is running')
 
+chrome.runtime.onConnect.addListener((port) => {
+
+  port.onMessage.addListener((msg) => {
+    
+    if (msg.type === 'CAPTURE') {
+      chrome.tabs.query({ active: true, currentWindow: true })
+      .then( (tabs) => {
+      
+        const windowId = tabs.length ? tabs[0].windowId || 0 : 0;
+        chrome.tabs.captureVisibleTab(windowId, { format: 'png' }, (dataUrl) => {
+          port.postMessage({ type: 'CAPTURE_RES', image: dataUrl });
+        })
+      })
+      .catch((error) => {
+        console.error(error)
+      });
+    }
+    else if (msg.type === 'ENTIRE_PAGE_HTML') {
+      contentPrintEntirePage();
+    }
+  });
+
+});
+
 chrome.runtime.onMessage.addListener((request, sender, senderResponse) => {
   const { type } = request;
   if (type === 'COUNT') {
@@ -18,8 +42,12 @@ chrome.runtime.onMessage.addListener((request, sender, senderResponse) => {
       console.error(error)
     });
   }
-  else if (type === 'ENTIRE_PAGE_HTML') {
-    chrome.tabs.query({ active: true, currentWindow: true })
+
+  return true;
+});
+
+const contentPrintEntirePage = () => {
+  chrome.tabs.query({ active: true, currentWindow: true })
     .then( (tabs) => {
       const tabId = tabs.length ? tabs[0].id || 0 : 0;
 
@@ -27,41 +55,13 @@ chrome.runtime.onMessage.addListener((request, sender, senderResponse) => {
         throw new Error('No tab found');
       }
 
-      chrome.tabs.sendMessage(tabId, { message: 'contentEntirePage' }, response => {
-        console.log('response from content script', response)
-      });
+      chrome.tabs.sendMessage(tabId, { message: 'contentEntirePage' });
       
-      // // get the entire page html
-      // getEntirePageHtml(tabId)
-      //   .then((html) => {
-      //     senderResponse(html);
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //   });
     })
     .catch((error) => {
       console.error(error)
     });
-  }
-  else if (type === 'SCROLL_CAPTURE') {
-    chrome.tabs.query({ active: true, currentWindow: true })
-      .then((tabs) => {
-        const tabId = tabs.length ? tabs[0].windowId || 0 : 0;
-        // capture area of the page
-        captureFullPage(tabId)
-          .then((captures) => {
-            senderResponse(captures);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        
-      })
-  }
-
-  return true;
-});
+};
 
 const getEntirePageHtml = (tabId: number): Promise<{}> => {
   return new Promise((resolve, reject) => {
