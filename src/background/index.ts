@@ -26,6 +26,9 @@ chrome.runtime.onConnect.addListener((port) => {
     else if (msg.type === 'SELECT_ELEMENT_SVG') {
       contentPrintSelectedElementToSvg();
     }
+    else if (msg.type === 'SELECT_AREA') {
+      contentPrintSelectedArea();
+    }
   });
 
 });
@@ -96,6 +99,23 @@ const contentPrintSelectedElementToSvg = () => {
       }
 
       chrome.tabs.sendMessage(tabId, { message: 'contentSelectedElementToSvg' });
+      
+    })
+    .catch((error) => {
+      console.error(error)
+    });
+};
+
+const contentPrintSelectedArea = () => {
+  chrome.tabs.query({ active: true, currentWindow: true })
+    .then( (tabs) => {
+      const tabId = tabs.length ? tabs[0].id || 0 : 0;
+
+      if (!tabId) {
+        throw new Error('No tab found');
+      }
+
+      chrome.tabs.sendMessage(tabId, { message: 'contentSelectArea' });
       
     })
     .catch((error) => {

@@ -1,5 +1,6 @@
 import html2canvas from "html2canvas";
-import { Potrace } from '../libs/potrace'
+import { Potrace } from '../libs/potrace';
+import { createOverlay } from "./selection-crosshair";
 
 console.info('contentScript is running');
 
@@ -28,6 +29,9 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     elementTo = 'svg';
     document.addEventListener('mouseover', highlightElement);
     document.addEventListener('click', selectElement);
+  }
+  else if (request.message === 'contentSelectArea') {
+    createOverlay();
   }
 });
   

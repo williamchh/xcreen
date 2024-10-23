@@ -11,6 +11,7 @@
         <button @click="captureEntirePage">Capture Entire Page</button>
         <button @click="selectElement">Select as Image</button>
         <button @click="selectElementToSvg">Select as SVG</button>
+        <button @click="selectAreaToImage">Select Area as Image</button>
       </div>
     </div>
 </template>
@@ -67,20 +68,21 @@ const captureEntirePage = async () => {
   // await chrome.runtime.sendMessage({ type: 'ENTIRE_PAGE_HTML' });
   if (port == null) { return; }
   port!.postMessage({ type: 'ENTIRE_PAGE_HTML' });
-
-  window.close();
 };
 
 const selectElement = async () => {
   if (port == null) { return; }
   port!.postMessage({ type: 'SELECT_ELEMENT' });
-
 };
 
 const selectElementToSvg = async () => {
   if (port == null) { return; }
   port!.postMessage({ type: 'SELECT_ELEMENT_SVG' });
+};
 
+const selectAreaToImage = async () => {
+  if (port == null) { return; }
+  port!.postMessage({ type: 'SELECT_AREA' });
 };
 
 </script>
