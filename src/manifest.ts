@@ -9,6 +9,9 @@ export default defineManifest({
   description: packageData.description,
   version: packageData.version,
   manifest_version: 3,
+  content_security_policy: {
+    extension_pages: 'script-src \'self\' ; object-src \'self\';',
+  },
   icons: {
     16: 'img/logo-16.png',
     32: 'img/logo-34.png',

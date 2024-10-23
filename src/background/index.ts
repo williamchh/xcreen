@@ -20,6 +20,12 @@ chrome.runtime.onConnect.addListener((port) => {
     else if (msg.type === 'ENTIRE_PAGE_HTML') {
       contentPrintEntirePage();
     }
+    else if (msg.type === 'SELECT_ELEMENT') {
+      contentPrintSelectedElement();
+    }
+    else if (msg.type === 'SELECT_ELEMENT_SVG') {
+      contentPrintSelectedElementToSvg();
+    }
   });
 
 });
@@ -56,6 +62,40 @@ const contentPrintEntirePage = () => {
       }
 
       chrome.tabs.sendMessage(tabId, { message: 'contentEntirePage' });
+      
+    })
+    .catch((error) => {
+      console.error(error)
+    });
+};
+
+const contentPrintSelectedElement = () => {
+  chrome.tabs.query({ active: true, currentWindow: true })
+    .then( (tabs) => {
+      const tabId = tabs.length ? tabs[0].id || 0 : 0;
+
+      if (!tabId) {
+        throw new Error('No tab found');
+      }
+
+      chrome.tabs.sendMessage(tabId, { message: 'contentSelectedElement' });
+      
+    })
+    .catch((error) => {
+      console.error(error)
+    });
+};
+
+const contentPrintSelectedElementToSvg = () => {
+  chrome.tabs.query({ active: true, currentWindow: true })
+    .then( (tabs) => {
+      const tabId = tabs.length ? tabs[0].id || 0 : 0;
+
+      if (!tabId) {
+        throw new Error('No tab found');
+      }
+
+      chrome.tabs.sendMessage(tabId, { message: 'contentSelectedElementToSvg' });
       
     })
     .catch((error) => {
