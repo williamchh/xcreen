@@ -9,9 +9,9 @@ export default defineManifest({
   description: packageData.description,
   version: packageData.version,
   manifest_version: 3,
-  content_security_policy: {
-    extension_pages: 'script-src \'self\' ; object-src \'self\';',
-  },
+  // content_security_policy: {
+  //   extension_pages: 'script-src \'self\' ; object-src \'self\';',
+  // },
   icons: {
     16: 'img/logo-16.png',
     32: 'img/logo-34.png',
@@ -49,7 +49,5 @@ export default defineManifest({
     'https://*/*',
     '<all_urls>'
   ],
-  chrome_url_overrides: {
-    newtab: 'newtab.html',
-  },
+
 })

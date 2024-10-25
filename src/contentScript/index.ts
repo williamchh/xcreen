@@ -71,6 +71,10 @@ function printFromCanvas(canvas: HTMLCanvasElement) {
 
 // Function to highlight the element under the mouse
 function highlightElement(event: MouseEvent) {
+  
+  event.preventDefault();
+  event.stopPropagation();
+
   if (!isSelecting) return;
   
   if (selectedElement) {
@@ -83,11 +87,12 @@ function highlightElement(event: MouseEvent) {
 
 // Function to select the element on click
 function selectElement(event: MouseEvent) {
-  if (!isSelecting) return;
-  
+
   event.preventDefault();
   event.stopPropagation();
-
+  
+  if (!isSelecting) return;
+  
   isSelecting = false;
   if (selectedElement) {
     selectedElement.style.outline = "";
@@ -111,7 +116,11 @@ async function downloadSvg(element: HTMLElement) {
   try {
     const canvas = await html2canvas(element, {
       allowTaint: true,
-      useCORS: true
+      useCORS: true,
+      scale: 2, // Increase scale factor for better quality
+      logging: false,
+      width: element.offsetWidth * 2,
+      height: element.offsetHeight * 2
     });
 
      // Convert canvas to blob directly instead of going through data URL

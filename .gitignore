@@ -21,3 +21,11 @@
 
 # secrets
 secrets.*.js
+
+# keys
+*.pem
+*.crx
+
+# build packages
+*.tgz
+*.zip

@@ -53,6 +53,13 @@ function createOverlay() {
   overlay.addEventListener('mouseup', endSelection);
 }
 
+function getScrollOffsets() {
+    return {
+      x: window.scrollX || document.documentElement.scrollLeft,
+      y: window.scrollY || document.documentElement.scrollTop
+    };
+  }
+
 function startSelection(e: MouseEvent) {
   isSelecting = true;
   startX = e.clientX;
@@ -96,9 +103,11 @@ function endSelection(e: MouseEvent) {
 import html2canvas from 'html2canvas';
 
 function generateImage(rect: DOMRect) {
+  const scrollOffsets = getScrollOffsets();
+
   html2canvas(document.body, {
-    x: rect.left + window.scrollX,
-    y: rect.top + window.scrollY,
+    x: rect.left + scrollOffsets.x,
+    y: rect.top + scrollOffsets.y,
     width: rect.width,
     height: rect.height,
     scrollX: 0,
@@ -117,32 +126,3 @@ function generateImage(rect: DOMRect) {
 
 // export createOverlay;
 export { createOverlay };
-
-
-// function generateImage(rect) {
-//     // Create canvas
-//     const canvas = document.createElement('canvas');
-//     canvas.width = rect.width;
-//     canvas.height = rect.height;
-//     const ctx = canvas.getContext('2d');
-    
-//     // Capture the selected area
-//     ctx.drawImage(
-//       document,
-//       rect.left + window.scrollX,
-//       rect.top + window.scrollY,
-//       rect.width,
-//       rect.height,
-//       0,
-//       0,
-//       rect.width,
-//       rect.height
-//     );
-    
-//     // Convert to image and download
-//     const image = canvas.toDataURL('image/png');
-//     const link = document.createElement('a');
-//     link.href = image;
-//     link.download = 'selection.png';
-//     link.click();
-//   }

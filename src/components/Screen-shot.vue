@@ -1,17 +1,13 @@
 <template>
     <div>
       <div ref="captureArea">
-        <!-- Your entire app or the part you want to capture goes here -->
-        <h1>{{ title }}</h1>
-        <p>{{ content }}</p>
-        <!-- Add more elements as needed -->
       </div>
+      <RadioButton @selectedType="selectedType" />
       <div style="display: flex; flex-direction: column; gap: .5em;">
-        <button @click="captureImage">Capture as Image</button>
-        <button @click="captureEntirePage">Capture Entire Page</button>
-        <button @click="selectElement">Select as Image</button>
-        <button @click="selectElementToSvg">Select as SVG</button>
-        <button @click="selectAreaToImage">Select Area as Image</button>
+        <button @click="captureImage">{{ capturesImage }}</button>
+        <button @click="captureEntirePage">{{ captureWholePage }}</button>
+        <button @click="selectElement">{{ selectAsElement }}</button>
+        <button @click="selectAreaToImage">{{ selectArea }}</button>
       </div>
     </div>
 </template>
@@ -19,9 +15,13 @@
 <script lang="ts" setup>
 
 import { ref, onMounted, onUnmounted } from 'vue';
+import RadioButton from './radio-button.vue';
+import { getLanguage } from '../libs/language';
 
-const title = ref('Capture Screen as Image');
-const content = ref('Click the button below to capture the screen as an image');
+const capturesImage = ref('Capture Image');
+const captureWholePage = ref('Capture Entire Page');
+const selectAsElement = ref('Select Element');
+const selectArea = ref('Select Area');
 const captureArea = ref(null);
 let port: chrome.runtime.Port | null = null;
 
@@ -31,7 +31,7 @@ const $refs = {
 
 onMounted(() => {
   port = chrome.runtime.connect({ name: 'popup-connection '});
-
+  getLanguageData();
   portListeners();
 });
 
@@ -39,6 +39,19 @@ onUnmounted(() => {
   if (port == null) return;
   port.disconnect();
 });
+
+const getLanguageData = () => {
+  const browserLanguage = chrome.i18n.getUILanguage();
+  const langData = getLanguage(browserLanguage);
+  capturesImage.value = langData.capture_as_image;
+  captureWholePage.value = langData.capture_entire_page;
+  selectAsElement.value = langData.select_as_element;
+  selectArea.value = langData.select_area;
+}
+
+const selectedType = (type: string) => {
+  console.log(type);
+};
 
 const portListeners = () => {
   if (port == null) return;
@@ -56,7 +69,8 @@ const portListeners = () => {
 }
 
 const captureImage = async () => {
-
+getLanguageData();
+return;
     if (port == null) { return; }
     port!.postMessage({ type: 'CAPTURE' });
 
@@ -86,3 +100,15 @@ const selectAreaToImage = async () => {
 };
 
 </script>
+
+<style scoped>
+
+button {
+  padding: .5em 1em;
+  border: none;
+  border-radius: 1em;
+  background-color: #42b983;
+  color: white;
+  cursor: pointer;
+}
+</style>
