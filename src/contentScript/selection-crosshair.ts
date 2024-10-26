@@ -1,3 +1,6 @@
+import html2canvas from 'html2canvas';
+import { downloadSvgFromCanvas } from './generate-svg';
+
 // content.js
 let isSelecting = false;
 let startX: number, startY: number;
@@ -42,8 +45,10 @@ style.textContent = `
 `;
 
 document.head.appendChild(style);
+let mType = 'png';
 
-function createOverlay() {
+function createOverlay(mediaType: string) {
+  mType = mediaType;
   overlay = document.createElement('div');
   overlay.className = 'selection-overlay';
   document.body.appendChild(overlay);
@@ -100,28 +105,39 @@ function endSelection(e: MouseEvent) {
   selectionBox = null;
 }
 
-import html2canvas from 'html2canvas';
 
 function generateImage(rect: DOMRect) {
   const scrollOffsets = getScrollOffsets();
 
   html2canvas(document.body, {
-    x: rect.left + scrollOffsets.x,
-    y: rect.top + scrollOffsets.y,
-    width: rect.width,
-    height: rect.height,
+    x: rect.left + scrollOffsets.x + 2,
+    y: rect.top + scrollOffsets.y + 2,
+    scale: 2,
+    width: rect.width - 4,
+    height: rect.height - 4,
     scrollX: 0,
     scrollY: 0,
   }).then((canvas) => {
-    // Convert to image and download
-    const image = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = 'selection.png';
-    link.click();
+
+    if (mType === 'svg') {
+      downloadSvgFromCanvas(canvas);
+    }
+    else {
+      downLoadImage(canvas);
+    }
+  
   }).catch((error) => {
     console.error('Failed to capture the selected area', error);
   });
+}
+
+function downLoadImage(canvas: HTMLCanvasElement) {
+    // Convert to image and download
+    const image = canvas.toDataURL(`image/${mType}`);
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = `selection.${mType}`;
+    link.click();
 }
 
 // export createOverlay;

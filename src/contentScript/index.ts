@@ -1,5 +1,5 @@
 import html2canvas from "html2canvas";
-import { Potrace } from '../libs/potrace';
+import { downloadSvgFromCanvas } from "./generate-svg";
 import { createOverlay } from "./selection-crosshair";
 
 console.info('contentScript is running');
@@ -9,9 +9,12 @@ type ElementTo = undefined | 'png' | 'svg'
 let isSelecting = false;
 let selectedElement: any = null;
 let elementTo: ElementTo = undefined;
+let mediaType = 'png';
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
+  mediaType = request.mediaType || 'png';
+  
   if (request.message === 'contentEntirePage') {
 
     const element = document.documentElement;
@@ -24,14 +27,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     document.addEventListener('mouseover', highlightElement);
     document.addEventListener('click', selectElement);
   }
-  else if (request.message === 'contentSelectedElementToSvg') {
-    isSelecting = true;
-    elementTo = 'svg';
-    document.addEventListener('mouseover', highlightElement);
-    document.addEventListener('click', selectElement);
-  }
   else if (request.message === 'contentSelectArea') {
-    createOverlay();
+    createOverlay(mediaType);
   }
 });
   
@@ -60,12 +57,13 @@ async function printHtmlElement(element: HTMLElement) {
 }
 
 function printFromCanvas(canvas: HTMLCanvasElement) {
-  const dataUrl = canvas.toDataURL('image/png');
+
+  const dataUrl = canvas.toDataURL(`image/${mediaType}`);
 
   // download the image
   const a = document.createElement('a');
   a.href = dataUrl;
-  a.download = 'entire-page.png';
+  a.download = `entire-page.${mediaType}`;
   a.click();
 }
 
@@ -97,10 +95,10 @@ function selectElement(event: MouseEvent) {
   if (selectedElement) {
     selectedElement.style.outline = "";
 
-    if (elementTo === 'png') {
+    if (mediaType === 'png' || mediaType === 'jpeg') {
       printHtmlElement(selectedElement);
     }
-    else if (elementTo === 'svg') {
+    else if (mediaType === 'svg') {
       downloadSvg(selectedElement);
     }
 
@@ -123,31 +121,10 @@ async function downloadSvg(element: HTMLElement) {
       height: element.offsetHeight * 2
     });
 
-     // Convert canvas to blob directly instead of going through data URL
-    const canvasBlob = await new Promise<Blob>((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob!);
-      }, 'image/png');
-    });
-
-    // Create a proper File object that matches what you'd get from a file input
-    const file = new File([canvasBlob], 'element.png', { 
-      type: 'image/png',
-      lastModified: Date.now()
-    });
-
-    Potrace.loadImageFromFile(file);
-    Potrace.process(function() {
-      const svg = Potrace.getSVG(1);
-
-      // download the image
-      const a = document.createElement('a');
-      a.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
-      a.download = 'element.svg';
-      a.click();
-    });
+    await downloadSvgFromCanvas(canvas);
     
   } catch (error) {
     console.error(error);
   }
 }
+

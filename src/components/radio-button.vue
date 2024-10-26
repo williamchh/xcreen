@@ -2,7 +2,7 @@
     <div class="radio-group">
         <template v-for="type in xcreenTypes" :key="type.id">
             <label class="xcreen-radio-label">
-                <input type="radio" name="type" :value="type.id" @click="selectedType">
+                <input type="radio" name="type" :value="type.id" v-model="selected" @click="selectedType">
                 <span class="xcreen-radio"></span>
                 <span class="radio-label">{{ type.name }}</span>
             </label>
@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue';
 
 const xcreenTypes = [
     { id: 'png', name: 'PNG' },
@@ -21,6 +20,9 @@ const xcreenTypes = [
 ];
 
 const emit = defineEmits(['selectedType']);
+import { ref } from 'vue';
+
+const selected = ref('png');
 
 const selectedType = (e: Event) => {
     const target = e.target as HTMLInputElement;

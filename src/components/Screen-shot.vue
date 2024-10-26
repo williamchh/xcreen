@@ -4,8 +4,8 @@
       </div>
       <RadioButton @selectedType="selectedType" />
       <div style="display: flex; flex-direction: column; gap: .5em;">
-        <button @click="captureImage">{{ capturesImage }}</button>
-        <button @click="captureEntirePage">{{ captureWholePage }}</button>
+        <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
+        <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <button @click="selectElement">{{ selectAsElement }}</button>
         <button @click="selectAreaToImage">{{ selectArea }}</button>
       </div>
@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 
@@ -23,6 +23,7 @@ const captureWholePage = ref('Capture Entire Page');
 const selectAsElement = ref('Select Element');
 const selectArea = ref('Select Area');
 const captureArea = ref(null);
+const mediaType = ref('png');
 let port: chrome.runtime.Port | null = null;
 
 const $refs = {
@@ -40,6 +41,10 @@ onUnmounted(() => {
   port.disconnect();
 });
 
+const entirePageDisabled = computed(() => {
+  return mediaType.value === 'svg';
+});
+
 const getLanguageData = () => {
   const browserLanguage = chrome.i18n.getUILanguage();
   const langData = getLanguage(browserLanguage);
@@ -50,7 +55,7 @@ const getLanguageData = () => {
 }
 
 const selectedType = (type: string) => {
-  console.log(type);
+  mediaType.value = type;
 };
 
 const portListeners = () => {
@@ -62,41 +67,35 @@ const portListeners = () => {
       const { image } = message;
       const link = document.createElement('a');
       link.href = image;
-      link.download = 'screenshot.png';
+      link.download = `screenshot.${mediaType.value}`;
       link.click();
     }
   })
 }
 
 const captureImage = async () => {
-getLanguageData();
-return;
+
     if (port == null) { return; }
-    port!.postMessage({ type: 'CAPTURE' });
+    port!.postMessage({ type: 'CAPTURE', mediaType: mediaType.value });
 
     window.close();
 
 };
 
 const captureEntirePage = async () => {
-  // await chrome.runtime.sendMessage({ type: 'ENTIRE_PAGE_HTML' });
+  
   if (port == null) { return; }
-  port!.postMessage({ type: 'ENTIRE_PAGE_HTML' });
+  port!.postMessage({ type: 'ENTIRE_PAGE_HTML', mediaType: mediaType.value });
 };
 
 const selectElement = async () => {
   if (port == null) { return; }
-  port!.postMessage({ type: 'SELECT_ELEMENT' });
-};
-
-const selectElementToSvg = async () => {
-  if (port == null) { return; }
-  port!.postMessage({ type: 'SELECT_ELEMENT_SVG' });
+  port!.postMessage({ type: 'SELECT_ELEMENT', mediaType: mediaType.value });
 };
 
 const selectAreaToImage = async () => {
   if (port == null) { return; }
-  port!.postMessage({ type: 'SELECT_AREA' });
+  port!.postMessage({ type: 'SELECT_AREA', mediaType: mediaType.value });
 };
 
 </script>
@@ -110,5 +109,11 @@ button {
   background-color: #42b983;
   color: white;
   cursor: pointer;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
 }
 </style>
