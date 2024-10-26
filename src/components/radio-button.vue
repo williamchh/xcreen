@@ -17,6 +17,7 @@ const xcreenTypes = [
     { id: 'png', name: 'PNG' },
     { id: 'jpeg', name: 'JPEG' },
     { id: 'svg', name: 'SVG' },
+    { id: 'txt', name : 'TXT' },
 ];
 
 const emit = defineEmits(['selectedType']);

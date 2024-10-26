@@ -17,12 +17,16 @@
 
 <script lang="ts" setup>
 
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, getCurrentInstance } from 'vue';
 import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 import FileUploader from './file-uploader.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
+import { createWorker } from 'tesseract.js';
+import { Tesseract }  from '../libs/tesseract';
 
+const app = getCurrentInstance();
+const te = app?.appContext.config.globalProperties;
 const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');
 const selectAsElement = ref('Select Element');
@@ -107,9 +111,34 @@ const handleFileSelected = (files: File[]) => {
   if (port == null) { return; }
   if (mediaType.value === 'svg') {
     // @ts-ignore
-    createSVGByFile(files);
+    // createSVGByFile(files);
+
+    // @ts-ignore
+    extractTextFromImage(files);
+
     return;
   }
+};
+
+const extractTextFromImage = async (file: File) => {
+
+  const worker = await createWorker(undefined, undefined, {
+    workerPath: '../libs/teseract.js',
+  });
+
+  const { data: { text } } = await worker.recognize(file);
+
+  console.log(text);
+
+  await worker.terminate();
+
+  // create a and download the text file
+  const link = document.createElement('a');
+  const blob = new Blob([text], { type: 'text/plain' });
+  link.href = URL.createObjectURL(blob);
+  link.download = 'extracted-text.txt';
+  link.click();
+
 };
 
 </script>
