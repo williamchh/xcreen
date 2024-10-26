@@ -59,7 +59,7 @@ h3 {
   font-size: 1.5rem;
   font-weight: 200;
   line-height: 1.2rem;
-  margin: 2rem auto;
+  margin: .5rem auto 2rem auto;
 }
 
 .calc {

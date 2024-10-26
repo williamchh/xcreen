@@ -14,14 +14,18 @@ export async function downloadSvgFromCanvas(canvas: HTMLCanvasElement) {
      lastModified: Date.now()
    });
  
-   Potrace.loadImageFromFile(file);
-   Potrace.process(function() {
-     const svg = Potrace.getSVG(1);
- 
-     // download the image
-     const a = document.createElement('a');
-     a.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
-     a.download = 'element.svg';
-     a.click();
-   });
+   createSVGByFile(file);
  }
+
+ export function createSVGByFile(file: File) {
+    Potrace.loadImageFromFile(file);
+    Potrace.process(function() {
+      const svg = Potrace.getSVG(1);
+  
+      // download the image
+      const a = document.createElement('a');
+      a.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+      a.download = 'element.svg';
+      a.click();
+    });
+ } 

@@ -8,6 +8,9 @@
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <button @click="selectElement">{{ selectAsElement }}</button>
         <button @click="selectAreaToImage">{{ selectArea }}</button>
+
+        <FileUploader v-if="entirePageDisabled" 
+          @files-selected="handleFileSelected" style="margin-top: 1rem;"/>
       </div>
     </div>
 </template>
@@ -17,6 +20,8 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
+import FileUploader from './file-uploader.vue';
+import { createSVGByFile } from '../contentScript/generate-svg';
 
 const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');
@@ -96,6 +101,15 @@ const selectElement = async () => {
 const selectAreaToImage = async () => {
   if (port == null) { return; }
   port!.postMessage({ type: 'SELECT_AREA', mediaType: mediaType.value });
+};
+
+const handleFileSelected = (files: File[]) => {
+  if (port == null) { return; }
+  if (mediaType.value === 'svg') {
+    // @ts-ignore
+    createSVGByFile(files);
+    return;
+  }
 };
 
 </script>

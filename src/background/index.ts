@@ -8,6 +8,7 @@ const messageMap: { [key in ServiceType]: string } = {
 }
 
 let mediaType = 'png';
+let files: File[] = [];
 
 chrome.runtime.onConnect.addListener((port) => {
 
@@ -67,26 +68,6 @@ const contentPrint = async (type: ServiceType, retryCount = 3) => {
     await chrome.tabs.sendMessage(tabId, { message: contentMessage, mediaType });
     
   });
-    // .then(async (tabs) => {
-    //   const tabId = tabs.length ? tabs[0].id || 0 : 0;
-
-    //   if (!tabId && retryCount > 0) {
-    //     setTimeout(() => {
-    //       contentPrint(type, retryCount - 1);
-    //     }, 500);
-    //     return;
-    //   }
-    //   else if (!tabId) {
-    //     console.error('Tab not found');
-    //     return;
-    //   }
-
-    //   await chrome.tabs.sendMessage(tabId, { message: contentMessage });
-      
-    // })
-    // .catch((error) => {
-    //   console.error(error)
-    // });
 };
 
 const getActiveTab = async () => {
