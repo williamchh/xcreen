@@ -8,8 +8,8 @@
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <button @click="selectElement">{{ selectAsElement }}</button>
         <button @click="selectAreaToImage">{{ selectArea }}</button>
-
-        <FileUploader v-if="entirePageDisabled" 
+<!--  -->
+        <FileUploader v-if="entirePageDisabled" :type="mediaType"
           @files-selected="handleFileSelected" style="margin-top: 1rem;"/>
       </div>
     </div>
@@ -17,15 +17,14 @@
 
 <script lang="ts" setup>
 
-import { ref, onMounted, onUnmounted, computed, getCurrentInstance } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 import FileUploader from './file-uploader.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
 import { createWorker } from 'tesseract.js';
+import { extractTextFromImage } from '../contentScript/extract-text-from-image';
 
-const app = getCurrentInstance();
-const te = app?.appContext.config.globalProperties;
 const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');
 const selectAsElement = ref('Select Element');
@@ -33,10 +32,6 @@ const selectArea = ref('Select Area');
 const captureArea = ref(null);
 const mediaType = ref('png');
 let port: chrome.runtime.Port | null = null;
-
-const $refs = {
-  captureArea,
-};
 
 onMounted(() => {
   port = chrome.runtime.connect({ name: 'popup-connection '});
@@ -50,7 +45,7 @@ onUnmounted(() => {
 });
 
 const entirePageDisabled = computed(() => {
-  return mediaType.value === 'svg';
+  return ['svg', 'txt'].includes(mediaType.value);
 });
 
 const getLanguageData = () => {
@@ -63,7 +58,11 @@ const getLanguageData = () => {
 }
 
 const selectedType = (type: string) => {
-  mediaType.value = type;
+  mediaType.value = '';
+
+  setTimeout(() => {
+    mediaType.value = type;
+  }, 0);
 };
 
 const portListeners = () => {
@@ -110,8 +109,11 @@ const handleFileSelected = (files: File[]) => {
   if (port == null) { return; }
   if (mediaType.value === 'svg') {
     // @ts-ignore
-    // createSVGByFile(files);
+    createSVGByFile(files);
 
+    return;
+  }
+  else if (mediaType.value === 'txt') {
     // @ts-ignore
     extractTextFromImage(files);
 
@@ -119,31 +121,6 @@ const handleFileSelected = (files: File[]) => {
   }
 };
 
-const extractTextFromImage = async (file: File) => {
-
-  const worker = await createWorker("eng", 3, {
-    workerBlobURL: false,
-    logger: m => console.log(m),
-    corePath: '../tesseract/core',
-    workerPath: '../tesseract/worker.min.js',
-    cacheMethod: 'write',
-    langPath: 'https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0_best'
-  });
-
-  const { data: { text } } = await worker.recognize(file);
-
-  console.log(text);
-
-  await worker.terminate();
-
-  // create a and download the text file
-  const link = document.createElement('a');
-  const blob = new Blob([text], { type: 'text/plain' });
-  link.href = URL.createObjectURL(blob);
-  link.download = 'extracted-text.txt';
-  link.click();
-
-};
 
 </script>
 
