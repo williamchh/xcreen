@@ -22,7 +22,7 @@ import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 import FileUploader from './file-uploader.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
-import { createWorker } from '../libs/tesseract/src';
+import { createWorker } from 'tesseract.js';
 
 const app = getCurrentInstance();
 const te = app?.appContext.config.globalProperties;
@@ -121,8 +121,13 @@ const handleFileSelected = (files: File[]) => {
 
 const extractTextFromImage = async (file: File) => {
 
-  const worker = await createWorker(undefined, undefined, {
-    workerPath: '../libs/teseract.js',
+  const worker = await createWorker("eng", 3, {
+    workerBlobURL: false,
+    logger: m => console.log(m),
+    corePath: '../tesseract/core',
+    workerPath: '../tesseract/worker.min.js',
+    cacheMethod: 'write',
+    langPath: 'https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0_best'
   });
 
   const { data: { text } } = await worker.recognize(file);
