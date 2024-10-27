@@ -8,7 +8,7 @@
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <button @click="selectElement">{{ selectAsElement }}</button>
         <button @click="selectAreaToImage">{{ selectArea }}</button>
-<!--  -->
+
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
           @files-selected="handleFileSelected" style="margin-top: 1rem;"/>
       </div>
@@ -22,8 +22,8 @@ import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 import FileUploader from './file-uploader.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
-import { createWorker } from 'tesseract.js';
-import { extractTextFromImage } from '../contentScript/extract-text-from-image';
+import { extractTextFromFile } from '../contentScript/extract-text-from-image';
+
 
 const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');
@@ -78,6 +78,14 @@ const portListeners = () => {
       link.click();
     }
   })
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'EXTRACT_TEXT_IMAGE') {
+      const { data, mineType, fileName } = message;
+
+      extractTextFromFile(data);
+    }
+  });
 }
 
 const captureImage = async () => {
@@ -115,7 +123,7 @@ const handleFileSelected = (files: File[]) => {
   }
   else if (mediaType.value === 'txt') {
     // @ts-ignore
-    extractTextFromImage(files);
+    extractTextFromFile(files);
 
     return;
   }

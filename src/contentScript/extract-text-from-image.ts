@@ -1,7 +1,8 @@
-import { createWorker } from 'tesseract.js';
+import { createWorker, ImageLike } from 'tesseract.js';
 
-const extractTextFromImage = async (file: File) => {
+const extractTextFromFile = async (file: ImageLike) => {
 
+  try {
     const worker = await createWorker("eng", 3, {
       workerBlobURL: false,
       corePath: '../tesseract/core',
@@ -19,8 +20,12 @@ const extractTextFromImage = async (file: File) => {
     const blob = new Blob([text], { type: 'text/plain' });
     link.href = URL.createObjectURL(blob);
     link.download = 'extracted-text.txt';
-    link.click();
-  
-  };
+    link.click();    
+  }
+  catch (error) {
+    console.error('Failed to extract text from image', error);
+  }
+};
 
-  export { extractTextFromImage };
+
+  export { extractTextFromFile };

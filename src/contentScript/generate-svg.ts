@@ -1,20 +1,27 @@
 import { Potrace } from '../libs/potrace';
 
 export async function downloadSvgFromCanvas(canvas: HTMLCanvasElement) {
-    // Convert canvas to blob directly instead of going through data URL
-    const canvasBlob = await new Promise<Blob>((resolve) => {
-     canvas.toBlob((blob) => {
-       resolve(blob!);
-     }, 'image/png');
-   });
+    
+  const file = await getFileFromCanvas(canvas);
  
-   // Create a proper File object that matches what you'd get from a file input
-   const file = new File([canvasBlob], 'element.png', { 
-     type: 'image/png',
-     lastModified: Date.now()
-   });
- 
-   createSVGByFile(file);
+  createSVGByFile(file);
+}
+
+ export async function getFileFromCanvas(canvas: HTMLCanvasElement) {
+  // Convert canvas to blob directly instead of going through data URL
+  const canvasBlob = await new Promise<Blob>((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(blob!);
+    }, 'image/png');
+  });
+
+  // Create a proper File object that matches what you'd get from a file input
+  const file = new File([canvasBlob], 'element.png', { 
+    type: 'image/png',
+    lastModified: Date.now()
+  });
+
+  return file;
  }
 
  export function createSVGByFile(file: File) {

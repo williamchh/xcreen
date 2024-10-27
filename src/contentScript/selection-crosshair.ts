@@ -60,15 +60,21 @@ function createOverlay(mediaType: string) {
 
 function getScrollOffsets() {
     return {
-      x: window.scrollX || document.documentElement.scrollLeft,
-      y: window.scrollY || document.documentElement.scrollTop
+      x: window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft,
+      y: window.scrollY || document.documentElement.scrollTop || document.body.scrollTop
     };
   }
 
 function startSelection(e: MouseEvent) {
+  e.preventDefault();
+
   isSelecting = true;
   startX = e.clientX;
   startY = e.clientY;
+
+  if (selectionBox) {
+    selectionBox.remove();
+  }
   
   selectionBox = document.createElement('div');
   selectionBox.className = 'selection-box';
@@ -76,7 +82,7 @@ function startSelection(e: MouseEvent) {
 }
 
 function updateSelection(e: MouseEvent) {
-  if (!isSelecting) return;
+  if (!isSelecting || !selectionBox) return;
   
   const currentX = e.clientX;
   const currentY = e.clientY;
@@ -122,6 +128,9 @@ function generateImage(rect: DOMRect) {
     if (mType === 'svg') {
       downloadSvgFromCanvas(canvas);
     }
+    else if (mType === 'txt') {
+      downloadTxtFromCanvas(canvas);
+    }
     else {
       downLoadImage(canvas);
     }
@@ -129,6 +138,20 @@ function generateImage(rect: DOMRect) {
   }).catch((error) => {
     console.error('Failed to capture the selected area', error);
   });
+}
+
+async function downloadTxtFromCanvas(canvas: HTMLCanvasElement) {
+    
+  const image = canvas.toDataURL("image/png");
+
+  const fileMessage = {
+    type: 'EXTRACT_TEXT_IMAGE',
+    data: image,
+    mineType: 'image/png',
+    fileName: 'xcreen-shot.png'
+  }
+
+  chrome.runtime.sendMessage(fileMessage);
 }
 
 function downLoadImage(canvas: HTMLCanvasElement) {
