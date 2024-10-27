@@ -22,8 +22,7 @@ import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 import FileUploader from './file-uploader.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
-import { createWorker } from 'tesseract.js';
-import { Tesseract }  from '../libs/tesseract';
+import { createWorker } from '../libs/tesseract/src';
 
 const app = getCurrentInstance();
 const te = app?.appContext.config.globalProperties;
