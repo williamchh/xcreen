@@ -182,7 +182,7 @@ export default defineComponent({
 .upload-zone {
   border: 2px dashed #e2e8f0;
   border-radius: 8px;
-  padding: 2rem;
+  padding: .5rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -206,7 +206,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: .5rem;
 }
 
 .upload-icon {

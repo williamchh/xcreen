@@ -1,4 +1,3 @@
-import html2canvas from 'html2canvas';
 import { downloadSvgFromCanvas } from './generate-svg';
 
 // content.js
@@ -16,7 +15,7 @@ style.textContent = `
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 10000;
+  z-index: 10003;
   cursor: crosshair;  
 }
 
@@ -27,7 +26,7 @@ style.textContent = `
   /* Create a clear window effect using box-shadow */
 /* box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); */
   /* Ensure the selection box is above the overlay */
-  z-index: 10001;
+  z-index: 10004;
   background: transparent;
 }
 
@@ -47,7 +46,21 @@ style.textContent = `
 document.head.appendChild(style);
 let mType = 'png';
 
-function createOverlay(mediaType: string) {
+function createOverlay(mediaType: string, imageData: any) {
+
+  // create image png and put in div position absolute top left to current scroll position
+  const img = new Image();
+  img.src = imageData;
+  img.style.position = 'absolute';
+  const scrollOffsets = getScrollOffsets();
+  img.style.top = `${scrollOffsets.y}px`;
+  img.style.left = '0';
+  img.style.zIndex = '10001';
+  img.id = 'xcreen-shot-preview-image';
+
+  document.body.style.overflow = 'hidden';
+  document.body.appendChild(img);
+
   mType = mediaType;
   overlay = document.createElement('div');
   overlay.className = 'selection-overlay';
@@ -103,41 +116,42 @@ function endSelection(e: MouseEvent) {
   isSelecting = false;
   
   const rect = selectionBox.getBoundingClientRect();
-  generateImage(rect);
+
+  // crop the image
+  const canvas = document.createElement('canvas');
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const ctx = canvas.getContext('2d')!;
+  const img = document.getElementById('xcreen-shot-preview-image') as HTMLImageElement;
+  ctx.drawImage(img, rect.left, rect.top, rect.width, rect.height, 0, 0, rect.width, rect.height);
+  generateImage(canvas);
   
   // Clean up
+  // remove image
+  const image = document.getElementById('xcreen-shot-preview-image');
+  if (image) {
+    image.remove();
+    document.body.style.overflow = '';
+  }
+  selectionBox.remove();
   overlay.remove();
   overlay = null;
   selectionBox = null;
 }
 
 
-function generateImage(rect: DOMRect) {
-  const scrollOffsets = getScrollOffsets();
+function generateImage(canvas: HTMLCanvasElement) {
 
-  html2canvas(document.body, {
-    x: rect.left + scrollOffsets.x + 2,
-    y: rect.top + scrollOffsets.y + 2,
-    scale: 2,
-    width: rect.width - 4,
-    height: rect.height - 4,
-    scrollX: 0,
-    scrollY: 0,
-  }).then((canvas) => {
-
-    if (mType === 'svg') {
-      downloadSvgFromCanvas(canvas);
-    }
-    else if (mType === 'txt') {
-      downloadTxtFromCanvas(canvas);
-    }
-    else {
-      downLoadImage(canvas);
-    }
+  if (mType === 'svg') {
+    downloadSvgFromCanvas(canvas);
+  }
+  else if (mType === 'txt') {
+    downloadTxtFromCanvas(canvas);
+  }
+  else {
+    downLoadImage(canvas);
+  }
   
-  }).catch((error) => {
-    console.error('Failed to capture the selected area', error);
-  });
 }
 
 async function downloadTxtFromCanvas(canvas: HTMLCanvasElement) {

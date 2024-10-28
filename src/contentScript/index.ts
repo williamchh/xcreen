@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     document.addEventListener('click', selectElement);
   }
   else if (request.message === 'contentSelectArea') {
-    createOverlay(mediaType);
+    createOverlay(mediaType, request.imageData);
   }
 });
   

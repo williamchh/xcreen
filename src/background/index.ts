@@ -9,6 +9,7 @@ const messageMap: { [key in ServiceType]: string } = {
 
 let mediaType = 'png';
 let files: File[] = [];
+let imageData: any | null = null;
 
 chrome.runtime.onConnect.addListener((port) => {
 
@@ -36,7 +37,19 @@ chrome.runtime.onConnect.addListener((port) => {
       contentPrint('SELECT_ELEMENT');
     }
     else if (msg.type === 'SELECT_AREA') {
-      contentPrint('SELECT_AREA');
+      chrome.tabs.query({ active: true, currentWindow: true })
+        .then( (tabs) => {
+        
+          const windowId = tabs.length ? tabs[0].windowId || 0 : 0;
+          chrome.tabs.captureVisibleTab(windowId, { format: 'png' }, (dataUrl) => {
+            imageData = dataUrl;
+            contentPrint('SELECT_AREA');
+          })
+        })
+        .catch((error) => {
+          console.error(error)
+        });
+      
     }
   });
 
@@ -65,7 +78,7 @@ const contentPrint = async (type: ServiceType, retryCount = 3) => {
       return;
     }
 
-    await chrome.tabs.sendMessage(tabId, { message: contentMessage, mediaType });
+    await chrome.tabs.sendMessage(tabId, { message: contentMessage, mediaType, imageData });
     
   });
 };

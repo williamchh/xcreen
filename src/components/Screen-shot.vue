@@ -3,6 +3,9 @@
       <div ref="captureArea">
       </div>
       <RadioButton @selectedType="selectedType" />
+      <progress-bar v-if="progressValue > 0" :uploadProgress="progressValue" style="margin-bottom: 1em;" />
+      <language-dropdown @language-selected="languageSelected" /> 
+
       <div style="display: flex; flex-direction: column; gap: .5em;">
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
@@ -21,8 +24,10 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import RadioButton from './radio-button.vue';
 import { getLanguage } from '../libs/language';
 import FileUploader from './file-uploader.vue';
+import ProgressBar from './progress-bar.vue';
+import languageDropdown from './language-dropdown.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
-import { extractTextFromFile } from '../contentScript/extract-text-from-image';
+import { extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
 
 
 const capturesImage = ref('Capture Image');
@@ -31,6 +36,7 @@ const selectAsElement = ref('Select Element');
 const selectArea = ref('Select Area');
 const captureArea = ref(null);
 const mediaType = ref('png');
+const extraLanguage = ref('eng');
 let port: chrome.runtime.Port | null = null;
 
 onMounted(() => {
@@ -47,6 +53,10 @@ onUnmounted(() => {
 const entirePageDisabled = computed(() => {
   return ['svg', 'txt'].includes(mediaType.value);
 });
+
+const languageSelected = (lang: string) => {
+  extraLanguage.value = lang;
+};
 
 const getLanguageData = () => {
   const browserLanguage = chrome.i18n.getUILanguage();
@@ -74,7 +84,7 @@ const portListeners = () => {
       const { image } = message;
       const link = document.createElement('a');
       link.href = image;
-      link.download = `screenshot.${mediaType.value}`;
+      link.download = `Xcreen.${mediaType.value}`;
       link.click();
     }
   })
@@ -83,7 +93,7 @@ const portListeners = () => {
     if (message.type === 'EXTRACT_TEXT_IMAGE') {
       const { data, mineType, fileName } = message;
 
-      extractTextFromFile(data);
+      extractTextFromFile(data, extraLanguage.value);
     }
   });
 }
