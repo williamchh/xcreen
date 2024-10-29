@@ -6,22 +6,14 @@ const countSync = ref(0)
 const link = ref('https://github.com/guocaoyi/create-chrome-ext')
 
 onMounted(() => {
-  chrome.storage.sync.get(['count'], (result) => {
-    countSync.value = result.count ?? 0
-  })
 
-  chrome.runtime.onMessage.addListener((request) => {
-    if (request.type === 'COUNT') {
-      countSync.value = request?.count ?? 0
-    }
-  })
 })
 </script>
 
 <template>
   <main>
     <h3>XCREEN</h3>
-    <ScreenShot />
+    <ScreenShot :show-txt-selection="true" />
   </main>
 </template>
 

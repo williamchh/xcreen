@@ -80,6 +80,7 @@ function getScrollOffsets() {
 
 function startSelection(e: MouseEvent) {
   e.preventDefault();
+  e.stopPropagation();
 
   isSelecting = true;
   startX = e.clientX;
@@ -95,6 +96,7 @@ function startSelection(e: MouseEvent) {
 }
 
 function updateSelection(e: MouseEvent) {
+  e.stopPropagation();
   if (!isSelecting || !selectionBox) return;
   
   const currentX = e.clientX;
@@ -112,6 +114,7 @@ function updateSelection(e: MouseEvent) {
 }
 
 function endSelection(e: MouseEvent) {
+  e.stopPropagation();
   if (!isSelecting) return;
   isSelecting = false;
   

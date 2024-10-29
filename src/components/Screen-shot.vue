@@ -14,7 +14,8 @@
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <!-- <button @click="selectElement">{{ selectAsElement }}</button> -->
-        <button @click="selectAreaToImage">{{ selectArea }}</button>
+        <button v-if="props.showTxtSelection" @click="selectAreaToImage">{{ selectArea }}</button>
+        <button v-else disabled>{{ selectArea }}</button>
 
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
           @files-selected="handleFileSelected" style="margin-top: 1rem;"/>
@@ -33,6 +34,9 @@ import languageDropdown from './language-dropdown.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
 import { extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
 
+const props = defineProps<{
+  showTxtSelection: boolean;
+}>();
 
 const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');

@@ -9,7 +9,7 @@ import ScreenShot from '../components/Screen-shot.vue';
   <main>
     <h3>XCREEN</h3>
 
-    <ScreenShot />
+    <ScreenShot :show-txt-selection="false" />
   </main>
 </template>
 
