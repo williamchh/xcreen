@@ -173,7 +173,7 @@ function downLoadImage(canvas: HTMLCanvasElement) {
     const image = canvas.toDataURL(`image/${mType}`);
     const link = document.createElement('a');
     link.href = image;
-    link.download = `selection.${mType}`;
+    link.download = `Xcreen.${mType}`;
     link.click();
 }
 

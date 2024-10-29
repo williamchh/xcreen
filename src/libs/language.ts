@@ -4,6 +4,7 @@ export const Language = {
         'capture_entire_page': '截取整个页面',
         'select_as_element': '选择元素',
         'select_area': '选择区域',
+        'select_a_language': '选择语言',
     },
     // traditional chinese
     'zh-TW': {
@@ -11,6 +12,7 @@ export const Language = {
         'capture_entire_page': '截取整個頁面',
         'select_as_element': '選擇元素',
         'select_area': '選擇區域',
+        'select_a_language': '選擇語言',
     },
     // japanese
     'ja': {
@@ -18,6 +20,7 @@ export const Language = {
         'capture_entire_page': 'ページ全体をキャプチャ',
         'select_as_element': '要素を選択',
         'select_area': 'エリアを選択',
+        'select_a_language': '言語を選択',
     },
     // korean
     'ko': {
@@ -25,6 +28,7 @@ export const Language = {
         'capture_entire_page': '전체 페이지 캡처',
         'select_as_element': '요소 선택',
         'select_area': '영역 선택',
+        'select_a_language': '언어 선택',
     },
     // french
     'fr': {
@@ -32,6 +36,7 @@ export const Language = {
         'capture_entire_page': 'Capturer la page entière',
         'select_as_element': 'Sélectionner un élément',
         'select_area': 'Sélectionner une zone',
+        'select_a_language': 'Choisir une langue',
     },
     // spanish
     'es': {
@@ -39,6 +44,7 @@ export const Language = {
         'capture_entire_page': 'Capturar página completa',
         'select_as_element': 'Seleccionar elemento',
         'select_area': 'Seleccionar área',
+        'select_a_language': 'Seleccionar un idioma',
     },
     // german
     'de': {
@@ -46,6 +52,7 @@ export const Language = {
         'capture_entire_page': 'Gesamte Seite erfassen',
         'select_as_element': 'Element auswählen',
         'select_area': 'Bereich auswählen',
+        'select_a_language': 'Sprache auswählen',
     },
     // italian
     'it': {
@@ -53,6 +60,7 @@ export const Language = {
         'capture_entire_page': 'Cattura l\'intera pagina',
         'select_as_element': 'Seleziona elemento',
         'select_area': 'Seleziona area',
+        'select_a_language': 'Seleziona una lingua',
     },
     // portuguese
     'pt': {
@@ -60,6 +68,7 @@ export const Language = {
         'capture_entire_page': 'Capturar página inteira',
         'select_as_element': 'Selecionar elemento',
         'select_area': 'Selecionar área',
+        'select_a_language': 'Selecione um idioma',
     },
     // russian
     'ru': {
@@ -67,6 +76,7 @@ export const Language = {
         'capture_entire_page': 'Захватить всю страницу',
         'select_as_element': 'Выбрать элемент',
         'select_area': 'Выбрать область',
+        'select_a_language': 'Выберите язык',
     },
     // arabic
     'ar': {
@@ -74,6 +84,7 @@ export const Language = {
         'capture_entire_page': 'التقاط صفحة كاملة',
         'select_as_element': 'تحديد العنصر',
         'select_area': 'تحديد المنطقة',
+        'select_a_language': 'اختر لغة',
     },
     // hindi
     'hi': {
@@ -81,6 +92,7 @@ export const Language = {
         'capture_entire_page': 'पूरे पृष्ठ को कैप्चर करें',
         'select_as_element': 'एलिमेंट का चयन करें',
         'select_area': 'क्षेत्र का चयन करें',
+        'select_a_language': 'भाषा चुनें',
     },
     // thai
     'th': {
@@ -88,6 +100,7 @@ export const Language = {
         'capture_entire_page': 'จับภาพหน้าทั้งหมด',
         'select_as_element': 'เลือกองค์ประกอบ',
         'select_area': 'เลือกพื้นที่',
+        'select_a_language': 'เลือกภาษา',
     },
     // vietnamese
     'vi': {
@@ -95,6 +108,7 @@ export const Language = {
         'capture_entire_page': 'Chụp toàn bộ trang',
         'select_as_element': 'Chọn phần tử',
         'select_area': 'Chọn khu vực',
+        'select_a_language': 'Chọn ngôn ngữ',
     },
     // indonesian
     'id': {
@@ -102,6 +116,7 @@ export const Language = {
         'capture_entire_page': 'Tangkap seluruh halaman',
         'select_as_element': 'Pilih elemen',
         'select_area': 'Pilih area',
+        'select_a_language': 'Pilih bahasa',
     },
     // malay
     'ms': {
@@ -109,6 +124,7 @@ export const Language = {
         'capture_entire_page': 'Tangkap seluruh halaman',
         'select_as_element': 'Pilih elemen',
         'select_area': 'Pilih kawasan',
+        'select_a_language': 'Pilih bahasa',
     },
     // english
     'en': {
@@ -116,6 +132,7 @@ export const Language = {
         'capture_entire_page': 'Capture entire page',
         'select_as_element': 'Select element',
         'select_area': 'Select area',
+        'select_a_language': 'Select a language',
     },
 }
 

@@ -32,7 +32,7 @@ export async function downloadSvgFromCanvas(canvas: HTMLCanvasElement) {
       // download the image
       const a = document.createElement('a');
       a.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
-      a.download = 'element.svg';
+      a.download = 'Xcreen.svg';
       a.click();
     });
  } 

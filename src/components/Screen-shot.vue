@@ -3,13 +3,17 @@
       <div ref="captureArea">
       </div>
       <RadioButton @selectedType="selectedType" />
+      
       <progress-bar v-if="progressValue > 0" :uploadProgress="progressValue" style="margin-bottom: 1em;" />
-      <language-dropdown @language-selected="languageSelected" /> 
+      
+      <language-dropdown 
+        v-if="mediaType === 'txt'"
+        @language-selected="languageSelected" /> 
 
       <div style="display: flex; flex-direction: column; gap: .5em;">
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
-        <button @click="selectElement">{{ selectAsElement }}</button>
+        <!-- <button @click="selectElement">{{ selectAsElement }}</button> -->
         <button @click="selectAreaToImage">{{ selectArea }}</button>
 
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
