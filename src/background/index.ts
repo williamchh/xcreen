@@ -1,10 +1,11 @@
 console.log('background is running');
 
-type ServiceType = 'ENTIRE_PAGE_HTML' | 'SELECT_ELEMENT' | 'SELECT_AREA';
+type ServiceType = 'ENTIRE_PAGE_HTML' | 'SELECT_ELEMENT' | 'SELECT_AREA' | 'OPEN_SIDE_PANEL';
 const messageMap: { [key in ServiceType]: string } = {
   'ENTIRE_PAGE_HTML': 'contentEntirePage',
   'SELECT_ELEMENT': 'contentSelectedElement',
   'SELECT_AREA': 'contentSelectArea',
+  'OPEN_SIDE_PANEL': 'contentOpenSidePanel'
 }
 
 let mediaType = 'png';
@@ -51,6 +52,10 @@ chrome.runtime.onConnect.addListener((port) => {
         });
       
     }
+    else if (msg.type === 'OPEN_SIDE_PANEL') {
+
+      contentPrint('OPEN_SIDE_PANEL');
+    }
   });
 
 });
@@ -78,7 +83,12 @@ const contentPrint = async (type: ServiceType, retryCount = 3) => {
       return;
     }
 
-    await chrome.tabs.sendMessage(tabId, { message: contentMessage, mediaType, imageData });
+    if (type === 'OPEN_SIDE_PANEL') {
+      chrome.sidePanel.open({ tabId});
+    }
+    else {
+      await chrome.tabs.sendMessage(tabId, { message: contentMessage, mediaType, imageData });
+    }
     
   });
 };

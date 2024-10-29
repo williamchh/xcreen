@@ -14,8 +14,8 @@
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <!-- <button @click="selectElement">{{ selectAsElement }}</button> -->
-        <button v-if="props.showTxtSelection" @click="selectAreaToImage">{{ selectArea }}</button>
-        <button v-else disabled>{{ selectArea }}</button>
+        <button v-if="props.showTxtSelection || mediaType !== 'txt'" @click="selectAreaToImage">{{ selectArea }}</button>
+        <button v-else @click="openSidePanel">{{ useSidePanel }}</button>
 
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
           @files-selected="handleFileSelected" style="margin-top: 1rem;"/>
@@ -42,6 +42,7 @@ const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');
 const selectAsElement = ref('Select Element');
 const selectArea = ref('Select Area');
+const useSidePanel = ref('Use Side Panel');
 const captureArea = ref(null);
 const mediaType = ref('png');
 const extraLanguage = ref('eng');
@@ -73,6 +74,7 @@ const getLanguageData = () => {
   captureWholePage.value = langData.capture_entire_page;
   selectAsElement.value = langData.select_as_element;
   selectArea.value = langData.select_area;
+  useSidePanel.value = langData.use_side_panel;
 }
 
 const selectedType = (type: string) => {
@@ -81,6 +83,13 @@ const selectedType = (type: string) => {
   setTimeout(() => {
     mediaType.value = type;
   }, 0);
+};
+
+const openSidePanel = async () => {
+  if (port == null) { return; }
+  port!.postMessage({ type: 'OPEN_SIDE_PANEL' });
+
+  window.close();
 };
 
 const portListeners = () => {
