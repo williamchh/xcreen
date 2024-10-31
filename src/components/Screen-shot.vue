@@ -56,7 +56,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (port == null) return;
-  port.disconnect();
+  // port.disconnect();
 });
 
 const entirePageDisabled = computed(() => {
@@ -119,8 +119,6 @@ const captureImage = async () => {
 
     if (port == null) { return; }
     port!.postMessage({ type: 'CAPTURE', mediaType: mediaType.value });
-
-    window.close();
 
 };
 

@@ -63,7 +63,7 @@ function printFromCanvas(canvas: HTMLCanvasElement) {
   // download the image
   const a = document.createElement('a');
   a.href = dataUrl;
-  a.download = `entire-page.${mediaType}`;
+  a.download = `Xcreen.${mediaType}`;
   a.click();
 }
 

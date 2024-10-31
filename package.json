@@ -3,7 +3,7 @@
   "displayName": "Xcreen",
   "version": "1.0.0",
   "author": "Will Chen",
-  "description": "Capture the full experience of any webpage and more with this powerful image generation app! Effortlessly create long screenshots of entire web pages, convert selected areas into high-quality SVGs, and even extract text from images in multiple languages. Upload images to generate SVGs and perform accurate text recognition, making this tool a versatile companion for designers, researchers, and anyone who needs quick, detailed visuals and text extraction. The app is designed for both ease of use and precision, ensuring fast, seamless results across a wide range of use cases.",
+  "description": "Generate full-page screenshot, convert areas to SVG, and extract text in major languages. Upload image for SVG and text recognition",
   "type": "module",
   "license": "MIT",
   "keywords": [
