@@ -33,6 +33,7 @@ import ProgressBar from './progress-bar.vue';
 import languageDropdown from './language-dropdown.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
 import { extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
+import { PortManager } from '../models/port-manager';
 
 const props = defineProps<{
   showTxtSelection: boolean;
@@ -46,18 +47,15 @@ const useSidePanel = ref('Use Side Panel');
 const captureArea = ref(null);
 const mediaType = ref('png');
 const extraLanguage = ref('eng');
-let port: chrome.runtime.Port | null = null;
+let portManager: PortManager | null = null;
+let bgPortManager: PortManager | null = null;
 
 onMounted(() => {
-  port = chrome.runtime.connect({ name: 'popup-connection '});
+  portManager = new PortManager('popup-content', handleResponseTask);
+  bgPortManager = new PortManager('popup-background', handleResponseTask);
   getLanguageData();
-  portListeners();
 });
-
-onUnmounted(() => {
-  if (port == null) return;
-  // port.disconnect();
-});
+;
 
 const entirePageDisabled = computed(() => {
   return ['svg', 'txt'].includes(mediaType.value);
@@ -86,60 +84,51 @@ const selectedType = (type: string) => {
 };
 
 const openSidePanel = async () => {
-  if (port == null) { return; }
-  port!.postMessage({ type: 'OPEN_SIDE_PANEL' });
+  if (bgPortManager == null) { return; }
+  bgPortManager!.sendMessage({ type: 'OPEN_SIDE_PANEL' });
 
-  window.close();
+  // window.close();
 };
 
-const portListeners = () => {
-  if (port == null) return;
-
-  port.onMessage.addListener(message => {
-    
-    if (message.type === 'CAPTURE_RES') {
-      const { image } = message;
+const handleResponseTask = (message: any) => {
+  if (message.type === 'CAPTURE_RES') {
+    const { image } = message;
       const link = document.createElement('a');
       link.href = image;
       link.download = `Xcreen.${mediaType.value}`;
       link.click();
-    }
-  })
+  }
+  else if (message.type === 'SELECT_AREA_RES') {
+    if (!portManager) { return; }
+    portManager.sendMessage({ type: 'SELECT_AREA', mediaType: mediaType.value, imageData: message.image });
+  }
+  else if (message.type === 'EXTRACT_TEXT_IMAGE') {
+    const { data } = message;
 
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'EXTRACT_TEXT_IMAGE') {
-      const { data, mineType, fileName } = message;
-
-      extractTextFromFile(data, extraLanguage.value);
-    }
-  });
-}
+    extractTextFromFile(data, extraLanguage.value);
+  }
+};
 
 const captureImage = async () => {
 
-    if (port == null) { return; }
-    port!.postMessage({ type: 'CAPTURE', mediaType: mediaType.value });
+    if (bgPortManager == null) { return; }
+    bgPortManager.sendMessage({ type: 'CAPTURE', mediaType: mediaType.value });
 
 };
 
 const captureEntirePage = async () => {
   
-  if (port == null) { return; }
-  port!.postMessage({ type: 'ENTIRE_PAGE_HTML', mediaType: mediaType.value });
-};
-
-const selectElement = async () => {
-  if (port == null) { return; }
-  port!.postMessage({ type: 'SELECT_ELEMENT', mediaType: mediaType.value });
+  if (portManager == null) { return; }
+  portManager!.sendMessage({ type: 'ENTIRE_PAGE_HTML', mediaType: mediaType.value });
 };
 
 const selectAreaToImage = async () => {
-  if (port == null) { return; }
-  port!.postMessage({ type: 'SELECT_AREA', mediaType: mediaType.value });
+  if (bgPortManager == null) { return; }
+  bgPortManager!.sendMessage({ type: 'SELECT_AREA', mediaType: mediaType.value });
 };
 
 const handleFileSelected = (files: File[]) => {
-  if (port == null) { return; }
+
   if (mediaType.value === 'svg') {
     // @ts-ignore
     createSVGByFile(files);

@@ -1,3 +1,4 @@
+import { ContentPortManager } from '../models/content-port-manager';
 import { downloadSvgFromCanvas } from './generate-svg';
 
 // content.js
@@ -5,6 +6,7 @@ let isSelecting = false;
 let startX: number, startY: number;
 let selectionBox: any = null;
 let overlay: any = null;
+let _portManager: ContentPortManager;
 
 // selection-overlay css 
 const style = document.createElement('style');
@@ -71,8 +73,10 @@ const throttle = (func: Function, limit: number) => {
   };
 };
 
-function createOverlay(mediaType: string, imageData: any) {
 
+function createOverlay(mediaType: string, imageData: any, portManager: ContentPortManager) {
+
+  _portManager = portManager;
   // create image png and put in div position absolute top left to current scroll position
   const img = new Image();
   img.src = imageData;
@@ -193,6 +197,7 @@ async function downloadTxtFromCanvas(canvas: HTMLCanvasElement) {
     fileName: 'xcreen-shot.png'
   }
 
+  _portManager.postMessage(fileMessage);
   chrome.runtime.sendMessage(fileMessage);
 }
 

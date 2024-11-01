@@ -1,0 +1,1 @@
+export type PortName = 'popup-content' | 'popup-background' | 'background-content' | 'content-background';
