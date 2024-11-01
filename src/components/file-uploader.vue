@@ -40,38 +40,35 @@ export default defineComponent({
       }
     };
 
-    const handleFiles = (newFiles: File[]) => {
-      const validFiles = newFiles.filter(file => {
-        // Add your file validation here
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        return file.size <= maxSize;
-      });
-
-      const filesWithPreviews = validFiles.map(file => {
-        const fileWithPreview = file as FileWithPreview;
-        if (file.type.startsWith('image/')) {
-          fileWithPreview.preview = URL.createObjectURL(file);
-        }
-        return fileWithPreview;
-      });
-
+        const handleFiles = (newFiles: File[]) => {
       if (!newFiles || !newFiles.length) {
         return;
       }
-
-        const firstFile = newFiles[0];
-        if (!firstFile.type.startsWith('image/')) {
-            alert('Unsupported file type');
-            return;
-        }
-
-        if (firstFile.size > 5 * 1024 * 1024) {
-            alert('File size exceeds 5MB');
-            return;
-        }
-
-      files.value = [...files.value, ...filesWithPreviews];
-      emit('files-selected', newFiles[0]);
+    
+      const firstFile = newFiles[0];
+    
+      // Validate file type
+      if (!firstFile.type.startsWith('image/')) {
+        alert('Unsupported file type');
+        return;
+      }
+    
+      // Validate file size
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (firstFile.size > maxSize) {
+        alert('File size exceeds 5MB');
+        return;
+      }
+    
+      // Create file preview if it's an image
+      const fileWithPreview = firstFile as FileWithPreview;
+      if (firstFile.type.startsWith('image/')) {
+        fileWithPreview.preview = URL.createObjectURL(firstFile);
+      }
+    
+      // Replace the existing file with the new one
+      files.value = [fileWithPreview];
+      emit('files-selected', firstFile);
     };
 
     const removeFile = (index: number) => {
