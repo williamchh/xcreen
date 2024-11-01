@@ -46,6 +46,31 @@ style.textContent = `
 document.head.appendChild(style);
 let mType = 'png';
 
+function debounce(func: Function, wait: number) {
+  let timeout: number | undefined;
+  return function(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = window.setTimeout(later, wait);
+  };
+}
+
+const throttle = (func: Function, limit: number) => {
+  let inThrottle: boolean;
+  return function(this: any) {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+};
+
 function createOverlay(mediaType: string, imageData: any) {
 
   // create image png and put in div position absolute top left to current scroll position
@@ -67,7 +92,7 @@ function createOverlay(mediaType: string, imageData: any) {
   document.body.appendChild(overlay);
   
   overlay.addEventListener('mousedown', startSelection);
-  overlay.addEventListener('mousemove', updateSelection);
+  overlay.addEventListener('mousemove', throttle(updateSelection, 20));
   overlay.addEventListener('mouseup', endSelection);
 }
 
