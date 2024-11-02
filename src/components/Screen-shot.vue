@@ -51,8 +51,11 @@ let portManager: PortManager | null = null;
 let bgPortManager: PortManager | null = null;
 
 onMounted(() => {
-  portManager = new PortManager('popup-content', handleResponseTask);
-  bgPortManager = new PortManager('popup-background', handleResponseTask);
+  portManager = new PortManager('popup-content', handleCtResponseTask);
+  bgPortManager = new PortManager('popup-background', handleBgResponseTask);
+  portManager.linkManager(bgPortManager);
+  bgPortManager.linkManager(portManager);
+
   getLanguageData();
 });
 ;
@@ -87,10 +90,10 @@ const openSidePanel = async () => {
   if (bgPortManager == null) { return; }
   bgPortManager!.sendMessage({ type: 'OPEN_SIDE_PANEL' });
 
-  // window.close();
+  window.close();
 };
 
-const handleResponseTask = (message: any) => {
+const handleBgResponseTask = (message: any) => {
   if (message.type === 'CAPTURE_RES') {
     const { image } = message;
       const link = document.createElement('a');
@@ -99,14 +102,25 @@ const handleResponseTask = (message: any) => {
       link.click();
   }
   else if (message.type === 'SELECT_AREA_RES') {
-    if (!portManager) { return; }
-    portManager.sendMessage({ type: 'SELECT_AREA', mediaType: mediaType.value, imageData: message.image });
+    portManagerSendMessage(message)
   }
-  else if (message.type === 'EXTRACT_TEXT_IMAGE') {
+};
+
+const handleCtResponseTask = (message: any) => {
+  if (message.type === 'EXTRACT_TEXT_IMAGE') {
     const { data } = message;
 
     extractTextFromFile(data, extraLanguage.value);
   }
+}
+
+const portManagerSendMessage = (message: any) => {
+  if (!bgPortManager || !bgPortManager.getLinkedManager()) { return; }
+  bgPortManager.getLinkedManager()?.currentPort()?.postMessage({ 
+    type: 'SELECT_AREA', 
+    mediaType: mediaType.value, 
+    imageData: message.image 
+  });
 };
 
 const captureImage = async () => {
