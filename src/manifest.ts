@@ -34,9 +34,6 @@ export default defineManifest({
       js: ['src/contentScript/index.ts'],
     },
   ],
-  side_panel: {
-    default_path: 'sidepanel.html',
-  },
   web_accessible_resources: [
     {
       resources: [
