@@ -23,7 +23,6 @@ export default defineManifest({
     default_popup: 'popup.html',
     default_icon: 'img/logo-48.png',
   },
-  options_page: 'options.html',
   devtools_page: 'devtools.html',
   background: {
     service_worker: 'src/background/index.ts',
@@ -40,11 +39,14 @@ export default defineManifest({
   },
   web_accessible_resources: [
     {
-      resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-64.png', 'img/logo-128.png'],
-      matches: [],
+      resources: [
+        'img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-64.png', 'img/logo-128.png',
+        'tesseract/*', 'src/offscreen.html', 'src/offscreen.js',
+      ],
+      matches: ["<all_urls>"],
     },
   ],
-  permissions: ['sidePanel', 'storage', 'tabs', 'activeTab', 'scripting'],
+  permissions: ['sidePanel', 'storage', 'tabs', 'activeTab', 'scripting', 'offscreen'],
   host_permissions: [
     'http://*/*',
     'https://*/*',

@@ -37,15 +37,45 @@ const getType = (type: string) => {
 };
 
 const portManager = new BackgroundPortManager('popup-background', handleTask);
+// let offscreenPort = chrome.runtime.connect({ name: 'bg-offscreen' });
+
+async function createOffscreen() {
+  if (await chrome.offscreen.hasDocument()) return;
+  await chrome.offscreen.createDocument({
+    url: 'src/offscreen.html',  // This page will create and run the worker
+    reasons: [chrome.offscreen.Reason.WORKERS, chrome.offscreen.Reason.IFRAME_SCRIPTING],
+    justification: 'Background processing in a worker'
+  });
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  if (!chrome.offscreen.hasDocument()) {
+    console.log('Creating offscreen document');
+    createOffscreen();
+  }
+});
 
 chrome.runtime.onConnect.addListener((port) => {
-  if (port.name !== 'popup-background') { return; }
+  if (!['popup-background', 'content-bg'].includes(port.name)) { return; }
+
   port.onMessage.addListener(msg => {
     if (msg.type === 'OPEN_SIDE_PANEL') {
       chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
         chrome.sidePanel.open({ tabId: tab.id! });
       });
     }
+    else if (msg.type === 'EXTRACT_TEXT_IMAGE') {
+
+      offscreenExtractText(msg);
+      
+    }
   })
 });
+
+const offscreenExtractText = async (msg: any) => {
+
+  await createOffscreen();
+  const file = msg.data;
+  chrome.runtime.sendMessage({ target: 'offscreen', type: 'process-image', file });
+};
 

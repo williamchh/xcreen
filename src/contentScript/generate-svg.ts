@@ -16,7 +16,7 @@ export async function downloadSvgFromCanvas(canvas: HTMLCanvasElement) {
   });
 
   // Create a proper File object that matches what you'd get from a file input
-  const file = new File([canvasBlob], 'element.png', { 
+  const file = new File([canvasBlob], 'xcreen.png', { 
     type: 'image/png',
     lastModified: Date.now()
   });

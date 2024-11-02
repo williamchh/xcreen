@@ -33,12 +33,7 @@ export class BackgroundPortManager {
         this._isConnected = false;
         this._port = null;
 
-        if (this._reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
-            this._reconnectAttempts++;
-            setTimeout(() => {
-                this.setupPortListener();
-            }, 1000 * this._reconnectAttempts);
-        }
+
     }
 
     private setupPortListener(): void {

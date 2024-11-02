@@ -1,7 +1,35 @@
-import { createWorker, ImageLike } from 'tesseract.js';
+import Tesseract, { createWorker, ImageLike } from 'tesseract.js';
 import { ref } from 'vue';
 
 export const progressValue = ref(0);
+
+const createTesseractWorker = async (language: string) => {
+  const worker = await createWorker(language, 3, {
+    workerBlobURL: false,
+    corePath: chrome.runtime.getURL('tesseract/core'),
+    workerPath: chrome.runtime.getURL('tesseract/worker.min.js'),
+    cacheMethod: 'write',
+    langPath: 'https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0_best',
+    logger: m => updateProgress(m),
+  });
+  return worker;
+};
+
+const readImage = async (file: ImageLike) => {
+
+const w = await createWorker('eng', 3, {
+    workerBlobURL: false,
+    corePath: chrome.runtime.getURL('tesseract/core'),
+    workerPath: chrome.runtime.getURL('tesseract/worker.min.js'),
+    cacheMethod: 'write',
+    langPath: 'https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0_best',
+    logger: m => updateProgress(m),
+  });
+
+  const { data: { text } } = await w.recognize(file);
+
+  return text;
+};
 
 const extractTextFromFile = async (file: ImageLike, language: string) => {
 
@@ -41,4 +69,4 @@ const updateProgress = (message: any) => {
 }
 
 
-  export { extractTextFromFile, updateProgress };
+  export { extractTextFromFile, updateProgress, createTesseractWorker, readImage };

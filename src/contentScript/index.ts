@@ -2,7 +2,7 @@ import html2canvas from "html2canvas";
 import { createOverlay } from "./selection-crosshair";
 import { ContentPortManager } from "../models/content-port-manager";
 
-// console.info('contentScript is running');
+console.info('contentScript is running');
  
 let mediaType = 'png';
 
@@ -14,10 +14,12 @@ const handleTask = async (msg: any) => {
     await printHtmlElement(element);
   }
   else if (msg.type === 'SELECT_AREA' || msg.type === 'contentSelectArea') {
-    createOverlay(mediaType, msg.imageData, portManager);
+    createOverlay(mediaType, msg.imageData, port);
   }
 
 };
+
+const port = chrome.runtime.connect({ name: 'content-bg' });
 
 const portManager = new ContentPortManager('popup-content', handleTask);
   

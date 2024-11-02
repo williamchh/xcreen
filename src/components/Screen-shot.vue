@@ -13,8 +13,8 @@
       <div style="display: flex; flex-direction: column; gap: .5em;">
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
-        <!-- <button @click="selectElement">{{ selectAsElement }}</button> -->
-        <button v-if="props.showTxtSelection || mediaType !== 'txt'" @click="selectAreaToImage">{{ selectArea }}</button>
+        <!-- <button @click="selectElement">{{ selectAsElement }}</button> props.showTxtSelection|| mediaType !== 'txt' -->
+        <button v-if="true" @click="selectAreaToImage">{{ selectArea }}</button>
         <button v-else @click="openSidePanel">{{ useSidePanel }}</button>
 
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
@@ -32,7 +32,7 @@ import FileUploader from './file-uploader.vue';
 import ProgressBar from './progress-bar.vue';
 import languageDropdown from './language-dropdown.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
-import { extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
+import { createTesseractWorker, extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
 import { PortManager } from '../models/port-manager';
 
 const props = defineProps<{
@@ -58,7 +58,6 @@ onMounted(() => {
 
   getLanguageData();
 });
-;
 
 const entirePageDisabled = computed(() => {
   return ['svg', 'txt'].includes(mediaType.value);
@@ -108,9 +107,9 @@ const handleBgResponseTask = (message: any) => {
 
 const handleCtResponseTask = (message: any) => {
   if (message.type === 'EXTRACT_TEXT_IMAGE') {
-    const { data } = message;
+    // const { data } = message;
 
-    extractTextFromFile(data, extraLanguage.value);
+    // extractTextFromFile(data, extraLanguage.value);
   }
 }
 
