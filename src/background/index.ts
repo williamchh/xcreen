@@ -1,16 +1,9 @@
 console.log('background is running');
 import { BackgroundPortManager } from "../models/background-port-manager";
-type ServiceType = 'ENTIRE_PAGE_HTML' | 'SELECT_ELEMENT' | 'SELECT_AREA' | 'OPEN_SIDE_PANEL';
-const messageMap: { [key in ServiceType]: string } = {
-  'ENTIRE_PAGE_HTML': 'contentEntirePage',
-  'SELECT_ELEMENT': 'contentSelectedElement',
-  'SELECT_AREA': 'contentSelectArea',
-  'OPEN_SIDE_PANEL': 'contentOpenSidePanel'
-}
+
 
 let mediaType = 'png';
-let files: File[] = [];
-let imageData: any | null = null;
+let lang = 'eng';
 
 const handleTask = (msg: any) => {
   mediaType = msg.mediaType || 'png';
@@ -21,6 +14,9 @@ const handleTask = (msg: any) => {
         
         const _mediaType = ['txt', 'svg'].includes(mediaType) ? 'png' : mediaType;
         const windowId = tabs.length ? tabs[0].windowId || 0 : 0;
+
+        lang = msg.lang || 'eng';
+
         chrome.tabs.captureVisibleTab(windowId, { format: _mediaType }, (dataUrl) => {
           portManager.postMessage({ type: getType(msg.type), image: dataUrl });
         })          
@@ -50,7 +46,6 @@ async function createOffscreen() {
 
 chrome.runtime.onInstalled.addListener(() => {
   if (!chrome.offscreen.hasDocument()) {
-    console.log('Creating offscreen document');
     createOffscreen();
   }
 });
@@ -76,6 +71,6 @@ const offscreenExtractText = async (msg: any) => {
 
   await createOffscreen();
   const file = msg.data;
-  chrome.runtime.sendMessage({ target: 'offscreen', type: 'process-image', file });
+  chrome.runtime.sendMessage({ target: 'offscreen', type: 'process-image', lang, file });
 };
 

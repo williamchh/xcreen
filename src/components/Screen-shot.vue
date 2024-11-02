@@ -107,9 +107,7 @@ const handleBgResponseTask = (message: any) => {
 
 const handleCtResponseTask = (message: any) => {
   if (message.type === 'EXTRACT_TEXT_IMAGE') {
-    // const { data } = message;
-
-    // extractTextFromFile(data, extraLanguage.value);
+    // todo: to be removed
   }
 }
 
@@ -123,21 +121,18 @@ const portManagerSendMessage = (message: any) => {
 };
 
 const captureImage = async () => {
-
-    if (bgPortManager == null) { return; }
-    bgPortManager.sendMessage({ type: 'CAPTURE', mediaType: mediaType.value });
-
+  if (bgPortManager == null) { return; }
+  bgPortManager.sendMessage({ type: 'CAPTURE', mediaType: mediaType.value });
 };
 
 const captureEntirePage = async () => {
-  
   if (portManager == null) { return; }
   portManager!.sendMessage({ type: 'ENTIRE_PAGE_HTML', mediaType: mediaType.value });
 };
 
 const selectAreaToImage = async () => {
   if (bgPortManager == null) { return; }
-  bgPortManager!.sendMessage({ type: 'SELECT_AREA', mediaType: mediaType.value });
+  bgPortManager!.sendMessage({ type: 'SELECT_AREA', mediaType: mediaType.value, lang: extraLanguage.value });
 };
 
 const handleFileSelected = (files: File[]) => {

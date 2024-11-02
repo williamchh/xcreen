@@ -1,6 +1,6 @@
 
 // Define the readImage function inside the offscreen page
-async function readImage(file) {
+async function readImage(file, lang) {
 
     const tesseractUrl = chrome.runtime.getURL('tesseract/tesseract.min.js');
 
@@ -15,7 +15,7 @@ async function readImage(file) {
 
     const { createWorker } = Tesseract;
 
-    const worker = await createWorker('eng', 3, {
+    const worker = await createWorker(lang, 3, {
       workerBlobURL: false,
       corePath: '../tesseract/core',
       workerPath: '../tesseract/worker.min.js',
@@ -31,7 +31,6 @@ async function readImage(file) {
 
   // Progress update function
   function updateProgress(message) {
-    console.log("Progress:", message);
     // Send progress updates back to the background script if needed
     chrome.runtime.sendMessage({ type: 'progress', message });
   }
@@ -43,13 +42,13 @@ async function readImage(file) {
 
     if (request.type === 'process-image') {
       const file = request.file; // Assuming file data is passed in request
-      const text = await readImage(file);
+      const text = await readImage(file, request.lang);
       // create a link and click it to download the text
       const blob = new Blob([text], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Xcreen_ocr.txt';
+      a.download = 'Xcreen.txt';
       a.click();
     }
     return true; // Keep the message channel open for async response
