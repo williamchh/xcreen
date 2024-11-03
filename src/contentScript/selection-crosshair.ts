@@ -20,6 +20,7 @@ style.textContent = `
   height: 100%;
   z-index: 10003;
   cursor: crosshair;  
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .selection-box {
@@ -27,10 +28,10 @@ style.textContent = `
   border: 2px solid #007bff;
   pointer-events: none;
   /* Create a clear window effect using box-shadow */
-/* box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); */
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
   /* Ensure the selection box is above the overlay */
   z-index: 10004;
-  background: transparent;
+  // background: transparent;
 }
 
 .selection-box::after {
@@ -123,12 +124,14 @@ function startSelection(e: MouseEvent) {
   selectionBox = document.createElement('div');
   selectionBox.className = 'selection-box';
   overlay.appendChild(selectionBox);
+
+  overlay.style['background-color'] = 'transparent';
 }
 
 function updateSelection(e: MouseEvent) {
   e.stopPropagation();
   if (!isSelecting || !selectionBox) return;
-  
+
   const currentX = e.clientX;
   const currentY = e.clientY;
   
