@@ -17,7 +17,7 @@ export class BackgroundPortManager {
 
     public postMessage(msg: any): void {
         if (!this._isConnected || !this._port) {
-            console.warn('Port not connected. Message not sent:', msg);
+
             return;
         }
 
@@ -59,7 +59,6 @@ export class BackgroundPortManager {
             });
         } catch (error) {
             console.error('Error setting up port listener:', error);
-            this.handleDisconnect();
         }
     }
 

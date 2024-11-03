@@ -23,7 +23,6 @@ export default defineManifest({
     default_popup: 'popup.html',
     default_icon: 'img/logo-48.png',
   },
-  devtools_page: 'devtools.html',
   background: {
     service_worker: 'src/background/index.ts',
     type: 'module',
@@ -43,7 +42,7 @@ export default defineManifest({
       matches: ["<all_urls>"],
     },
   ],
-  permissions: ['sidePanel', 'storage', 'tabs', 'activeTab', 'scripting', 'offscreen'],
+  permissions: ['storage', 'tabs', 'activeTab', 'scripting', 'offscreen'],
   host_permissions: [
     'http://*/*',
     'https://*/*',

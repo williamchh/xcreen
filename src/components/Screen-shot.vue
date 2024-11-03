@@ -50,13 +50,16 @@ let portManager: PortManager | null = null;
 let bgPortManager: PortManager | null = null;
 
 onMounted(() => {
+  setupPortManagers();
+  getLanguageData();
+});
+
+const setupPortManagers = () => {
   portManager = new PortManager('popup-content', handleCtResponseTask);
   bgPortManager = new PortManager('popup-background', handleBgResponseTask);
   portManager.linkManager(bgPortManager);
   bgPortManager.linkManager(portManager);
-
-  getLanguageData();
-});
+}
 
 const entirePageDisabled = computed(() => {
   return ['svg', 'txt'].includes(mediaType.value);
@@ -113,18 +116,31 @@ const portManagerSendMessage = (message: any) => {
 };
 
 const captureImage = async () => {
-  if (bgPortManager == null) { return; }
-  bgPortManager.sendMessage({ type: 'CAPTURE', mediaType: mediaType.value });
+  if (bgPortManager == null) {
+    setupPortManagers();
+    await sleep(500);
+   }
+  bgPortManager!.sendMessage({ type: 'CAPTURE', mediaType: mediaType.value });
 };
 
 const captureEntirePage = async () => {
-  if (portManager == null) { return; }
+  if (portManager == null) {
+    setupPortManagers();
+    await sleep(500);
+  }
   portManager!.sendMessage({ type: 'ENTIRE_PAGE_HTML', mediaType: mediaType.value });
 };
 
 const selectAreaToImage = async () => {
-  if (bgPortManager == null) { return; }
+  if (bgPortManager == null) { 
+    setupPortManagers();
+    await sleep(500);
+  }
   bgPortManager!.sendMessage({ type: 'SELECT_AREA', mediaType: mediaType.value, lang: extraLanguage.value });
+};
+
+const sleep = async (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 const handleFileSelected = (files: File[]) => {

@@ -126,7 +126,6 @@ export class PortManager {
     }
 
     public sendMessage(msg: any): void {
-
         if (this._currentPort === null) { return; }
 
         this._currentPort.postMessage(msg);

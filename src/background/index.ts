@@ -45,7 +45,11 @@ async function createOffscreen() {
   });
 }
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async() => {
+  portManager = new BackgroundPortManager('popup-background', handleTask);
+});
+
+chrome.runtime.onStartup.addListener(() => {
   setTimeout(async () => {
     const windows = await chrome.windows.getAll();
 
