@@ -47,6 +47,25 @@ async function createOffscreen() {
 
 chrome.runtime.onInstalled.addListener(async() => {
   portManager = new BackgroundPortManager('popup-background', handleTask);
+  // TODO: excute the content script again on each tabs after reload
+  const manifest = chrome.runtime.getManifest();
+  const contentScripts = manifest.content_scripts;
+
+  if (!contentScripts) return;
+
+  chrome.tabs.query({}, (tabs) => {
+
+    tabs.forEach((tab) => {
+      contentScripts.forEach((contentScript) => {
+        contentScript.js?.forEach((js) => {
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id! },
+            files: [js]
+          });
+        });
+      });
+    });
+  });
 });
 
 chrome.runtime.onStartup.addListener(() => {

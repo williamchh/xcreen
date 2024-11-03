@@ -1,8 +1,6 @@
 import html2canvas from "html2canvas";
 import { createOverlay } from "./selection-crosshair";
 import { ContentPortManager } from "../models/content-port-manager";
-
-console.info('contentScript is running');
  
 let mediaType = 'png';
 
@@ -26,25 +24,7 @@ const _ = new ContentPortManager('popup-content', handleTask);
 chrome.runtime.onInstalled?.addListener(async() => {
   await sleep(500);
   chrome.runtime.reload();
-  // TODO: excute the content script again on each tabs after reload
-  const manifest = chrome.runtime.getManifest();
-  const contentScripts = manifest.content_scripts;
-
-  if (!contentScripts) return;
-
-  chrome.tabs.query({}, (tabs) => {
-
-    tabs.forEach((tab) => {
-      contentScripts.forEach((contentScript) => {
-        contentScript.js?.forEach((js) => {
-          chrome.scripting.executeScript({
-            target: { tabId: tab.id! },
-            files: [js]
-          });
-        });
-      });
-    });
-  });
+  
 });
 
 const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
