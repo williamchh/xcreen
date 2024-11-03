@@ -1,4 +1,4 @@
-console.log('background is running');
+// console.log('background is running');
 import { BackgroundPortManager } from "../models/background-port-manager";
 
 
@@ -9,6 +9,7 @@ const handleTask = (msg: any) => {
   mediaType = msg.mediaType || 'png';
   
   if (msg.type === 'CAPTURE' || msg.type === 'SELECT_AREA') {
+
     chrome.tabs.query({ active: true, currentWindow: true })
       .then(async (tabs) => {
         
@@ -32,7 +33,7 @@ const getType = (type: string) => {
   return `${type}_RES`;
 };
 
-const portManager = new BackgroundPortManager('popup-background', handleTask);
+let portManager = new BackgroundPortManager('popup-background', handleTask);
 // let offscreenPort = chrome.runtime.connect({ name: 'bg-offscreen' });
 
 async function createOffscreen() {
@@ -45,9 +46,14 @@ async function createOffscreen() {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  if (!chrome.offscreen.hasDocument()) {
-    createOffscreen();
-  }
+  setTimeout(async () => {
+    const windows = await chrome.windows.getAll();
+
+    if (!windows || !windows.length) return;
+    
+    portManager = new BackgroundPortManager('popup-background', handleTask);
+
+  }, 1000);
 });
 
 chrome.runtime.onConnect.addListener((port) => {

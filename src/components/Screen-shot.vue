@@ -14,8 +14,7 @@
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
         <!-- <button @click="selectElement">{{ selectAsElement }}</button> props.showTxtSelection|| mediaType !== 'txt' -->
-        <button v-if="true" @click="selectAreaToImage">{{ selectArea }}</button>
-        <button v-else @click="openSidePanel">{{ useSidePanel }}</button>
+        <button @click="selectAreaToImage">{{ selectArea }}</button>
 
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
           @files-selected="handleFileSelected" style="margin-top: 1rem;"/>
@@ -83,13 +82,6 @@ const selectedType = (type: string) => {
   setTimeout(() => {
     mediaType.value = type;
   }, 0);
-};
-
-const openSidePanel = async () => {
-  if (bgPortManager == null) { return; }
-  bgPortManager!.sendMessage({ type: 'OPEN_SIDE_PANEL' });
-
-  window.close();
 };
 
 const handleBgResponseTask = (message: any) => {

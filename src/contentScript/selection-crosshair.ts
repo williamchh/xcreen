@@ -19,7 +19,7 @@ style.textContent = `
   width: 100%;
   height: 100%;
   z-index: 10003;
-  cursor: crosshair;  
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="16" y1="0" x2="16" y2="32" stroke="white" stroke-width="2"/><line x1="0" y1="16" x2="32" y2="16" stroke="white" stroke-width="2"/></svg>') 16 16, crosshair;
   background-color: rgba(0, 0, 0, 0.5);
 }
 
@@ -90,16 +90,29 @@ function createOverlay(mediaType: string, imageData: any, port: chrome.runtime.P
   img.id = 'xcreen-shot-preview-image';
 
   document.body.style.overflow = 'hidden';
+  // find if body has any children with id xcreen-shot-preview-image
+  const image = document.getElementById('xcreen-shot-preview-image');
+  if (image) 
+    image.remove();
+
   document.body.appendChild(img);
 
   mType = mediaType;
   overlay = document.createElement('div');
   overlay.className = 'selection-overlay';
+  removeExtraOverlays();
   document.body.appendChild(overlay);
   
   overlay.addEventListener('mousedown', startSelection);
   overlay.addEventListener('mousemove', throttle(updateSelection, 20));
   overlay.addEventListener('mouseup', endSelection);
+}
+
+function removeExtraOverlays() {
+  const overlays = document.getElementsByClassName('selection-overlay');
+  while (overlays.length) {
+    overlays[0].remove();
+  }
 }
 
 function getScrollOffsets() {
@@ -150,7 +163,7 @@ function endSelection(e: MouseEvent) {
   e.stopPropagation();
   if (!isSelecting) return;
   isSelecting = false;
-  
+
   const rect = selectionBox.getBoundingClientRect();
 
   // crop the image
@@ -169,9 +182,9 @@ function endSelection(e: MouseEvent) {
     image.remove();
     document.body.style.overflow = '';
   }
-  selectionBox.remove();
   overlay.remove();
   overlay = null;
+  selectionBox.remove();
   selectionBox = null;
 }
 
