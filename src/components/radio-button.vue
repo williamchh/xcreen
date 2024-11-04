@@ -13,6 +13,14 @@
 
 <script setup lang="ts">
 
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    chrome.storage.sync.get('mediaType', (data) => {
+        selected.value = data.mediaType || 'png';
+    });
+});
+
 const xcreenTypes = [
     { id: 'png', name: 'PNG' },
     { id: 'jpeg', name: 'JPEG' },
@@ -28,6 +36,8 @@ const selected = ref('png');
 const selectedType = (e: Event) => {
     const target = e.target as HTMLInputElement;
     emit('selectedType', target.value);
+
+    chrome.storage.sync.set({ mediaType: target.value });
 };
 </script>
 

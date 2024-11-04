@@ -26,10 +26,14 @@ onMounted(() => {
     const lang = getLanguage(browserLanguage);
     languages.value = langSet;
     selectLanguagePlaceholder.value = lang.select_a_language;
+    chrome.storage.sync.get('language', (data) => {
+        selectedLanguage.value = data.language || 'eng';
+    });
 });
 
 const onLanguageChange = () => {
     emit('language-selected', selectedLanguage.value);
+    chrome.storage.sync.set({ language: selectedLanguage.value });
 };
 
 </script>

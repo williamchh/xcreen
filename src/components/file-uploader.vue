@@ -40,7 +40,7 @@ export default defineComponent({
       }
     };
 
-        const handleFiles = (newFiles: File[]) => {
+    const handleFiles = (newFiles: File[]) => {
       if (!newFiles || !newFiles.length) {
         return;
       }

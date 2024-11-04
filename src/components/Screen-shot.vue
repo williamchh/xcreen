@@ -50,8 +50,20 @@ let portManager: PortManager | null = null;
 let bgPortManager: PortManager | null = null;
 
 onMounted(() => {
-  setupPortManagers();
+  
+  setTimeout(() => {
+    setupPortManagers();
+  }, 1000);
+  
   getLanguageData();
+
+  chrome.storage.sync.get('mediaType', (data) => {
+    mediaType.value = data.mediaType || 'png';
+  });
+
+  chrome.storage.sync.get('language', (data) => {
+    extraLanguage.value = data.language || 'eng';
+  });
 });
 
 const setupPortManagers = () => {
@@ -153,7 +165,7 @@ const handleFileSelected = (files: File[]) => {
   }
   else if (mediaType.value === 'txt') {
     // @ts-ignore
-    extractTextFromFile(files);
+    extractTextFromFile(files, extraLanguage.value);
 
     return;
   }
