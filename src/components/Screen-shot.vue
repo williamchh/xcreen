@@ -13,7 +13,7 @@
       <div style="display: flex; flex-direction: column; gap: .5em;">
         <button :disabled="entirePageDisabled" @click="captureImage">{{ capturesImage }}</button>
         <button :disabled="entirePageDisabled" @click="captureEntirePage">{{ captureWholePage }}</button>
-        <!-- <button @click="selectElement">{{ selectAsElement }}</button> props.showTxtSelection|| mediaType !== 'txt' -->
+        <button :disabled="entirePageDisabled" @click="captureEntirePage2">{{ captureWholePage2 }}</button>
         <button @click="selectAreaToImage">{{ selectArea }}</button>
 
         <FileUploader v-if="entirePageDisabled" :type="mediaType"
@@ -31,7 +31,7 @@ import FileUploader from './file-uploader.vue';
 import ProgressBar from './progress-bar.vue';
 import languageDropdown from './language-dropdown.vue';
 import { createSVGByFile } from '../contentScript/generate-svg';
-import { createTesseractWorker, extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
+import { extractTextFromFile, progressValue } from '../contentScript/extract-text-from-image';
 import { PortManager } from '../models/port-manager';
 
 const props = defineProps<{
@@ -40,7 +40,7 @@ const props = defineProps<{
 
 const capturesImage = ref('Capture Image');
 const captureWholePage = ref('Capture Entire Page');
-const selectAsElement = ref('Select Element');
+const captureWholePage2 = ref('Capture Entire Page2');
 const selectArea = ref('Select Area');
 const useSidePanel = ref('Use Side Panel');
 const captureArea = ref(null);
@@ -86,7 +86,7 @@ const getLanguageData = () => {
   const langData = getLanguage(browserLanguage);
   capturesImage.value = langData.capture_as_image;
   captureWholePage.value = langData.capture_entire_page;
-  selectAsElement.value = langData.select_as_element;
+  captureWholePage2.value = langData.capture_entire_page2;
   selectArea.value = langData.select_area;
   useSidePanel.value = langData.use_side_panel;
 }
@@ -141,6 +141,14 @@ const captureEntirePage = async () => {
     await sleep(500);
   }
   portManager!.sendMessage({ type: 'ENTIRE_PAGE_HTML', mediaType: mediaType.value });
+};
+
+const captureEntirePage2 = async () => {
+  if (portManager == null) {
+    setupPortManagers();
+    await sleep(500);
+  }
+  portManager!.sendMessage({ type: 'ENTIRE_PAGE_HTML2', mediaType: mediaType.value });
 };
 
 const selectAreaToImage = async () => {

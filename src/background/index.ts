@@ -83,15 +83,28 @@ chrome.runtime.onConnect.addListener((port) => {
   if (!['popup-background', 'content-bg'].includes(port.name)) { return; }
 
   port.onMessage.addListener(msg => {
-    if (msg.type === 'OPEN_SIDE_PANEL') {
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        chrome.sidePanel.open({ tabId: tab.id! });
-      });
-    }
-    else if (msg.type === 'EXTRACT_TEXT_IMAGE') {
+    if (msg.type === 'EXTRACT_TEXT_IMAGE') {
 
       offscreenExtractText(msg);
       
+    }
+    else if (msg.type === 'ENTIRE_PAGE_HTML2') {
+      chrome.tabs.query({ active: true, currentWindow: true })
+      .then(async (tabs) => {
+        
+        const windowId = tabs.length ? tabs[0].windowId || 0 : 0;
+
+        if (!windowId) 
+          throw new Error('No windowId found');
+    
+        chrome.tabs.captureVisibleTab(windowId, { format: msg.mediaType }, (dataUrl) => {
+          port.postMessage({ type: 'ENTIRE_PAGE_HTML2', image: dataUrl, captured: true });
+        })          
+        
+      })
+      .catch((error) => {
+        port.postMessage({ type: 'ENTIRE_PAGE_HTML2', image: null, captured: false });
+      });
     }
   })
 });
@@ -102,4 +115,3 @@ const offscreenExtractText = async (msg: any) => {
   const file = msg.data;
   chrome.runtime.sendMessage({ target: 'offscreen', type: 'process-image', lang, file });
 };
-
