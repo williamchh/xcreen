@@ -42,7 +42,7 @@ export default defineManifest({
       matches: ["<all_urls>"],
     },
   ],
-  permissions: ['storage', 'activeTab', 'scripting', 'offscreen'],
+  permissions: ['storage', 'activeTab', 'tabs', 'scripting', 'offscreen'],
   host_permissions: [
     'http://*/*',
     'https://*/*',
